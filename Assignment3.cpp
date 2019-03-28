@@ -10,39 +10,65 @@ class SmartPointer
 private:
 	T* i;
 public:
-	SmartPointer(){
+	SmartPointer() {
 		i = new T;
 		(*i) = 0;
-		cout << "Created " << (*i) << endl;
+		//cout << "Created " << (*i) << endl;
 	};
-	
-	SmartPointer(T j){
-		i = new T;
+
+	SmartPointer(T j) {
+
 		if (sizeof(j) > sizeof(T)) {
 			throw "Error: This is too large.";
 		}
 		if (j < 0) {
 			throw "We don't do negatives.";
 		}
-		this->i = &j;
-		cout << "Created " << (*i) << endl;
+		i = new T(j);
+		//cout << "Created " << (*i) << endl;
 	};
 
-	~SmartPointer(){
+	~SmartPointer() {
 		delete i;
 		i = NULL;
 		cout << "Deleted" << endl;
 	};
-	
-	
+
 	T setValue(T j);
 	T getValue();
-	friend SmartPointer<T> operator+(const SmartPointer<T>& sp){
-		SmartPointer<T> result;
-		result.(*i) = this->(*i)+ sp.(*i);
+	
+	friend SmartPointer operator+(const SmartPointer<T> &sp1, const SmartPointer<T> &sp2) {
+		SmartPointer<T> result(0);
+		T* p1 = sp1.i;
+		T* p2 = sp2.i;
+		T sum;
+		sum= (*p1) + (*p2);
+		result.setValue(sum);
 		return result;
 	};
 
+	friend SmartPointer operator-(const SmartPointer<T> &sp1, const SmartPointer<T> &sp2) {
+		SmartPointer<T> result(0);
+		T* p1 = sp1.i;
+		T* p2 = sp2.i;
+		T sum;
+		sum = (*p1) - (*p2);
+		if (sum < 0) {
+			throw "We don't do negatives.";
+		}
+		result.setValue(sum);
+		return result;
+	};
+
+	friend SmartPointer operator*(const SmartPointer<T> &sp1, const SmartPointer<T> &sp2) {
+		SmartPointer<T> result(0);
+		T* p1 = sp1.i;
+		T* p2 = sp2.i;
+		T sum;
+		sum = (*p1) * (*p2);
+		result.setValue(sum);
+		return result;
+	};
 };
 
 template <class T>
@@ -52,21 +78,18 @@ T SmartPointer<T>::setValue(T j) {
 	}
 	if (j < 0) {
 		throw "We don't do negatives.";
-		
 	}
-	this->i = &j;
+	this->i = new T(j);
 	return 0;
 }
 
 template <class T>
 T SmartPointer<T>::getValue() {
-	return *i;
+	return (*i);
 }
 
-
-
 int main() {
-	
+
 	cout << "Creating a SmartPointer of type int with no value provided" << endl;
 	SmartPointer<int> SmartIntPointer2;
 	cout << "SmartIntPointer2 = " << SmartIntPointer2.getValue() << endl;
@@ -75,7 +98,7 @@ int main() {
 	cout << "Setting value of SmartIntPointer2 to 5" << endl;
 	SmartIntPointer2.setValue(5);
 	cout << "SmartIntPointer2 = " << SmartIntPointer2.getValue() << endl;
-	
+
 	cout << "Creating a SmartPointer of type float with no value provided" << endl;
 	SmartPointer<float> SmartFloatPointer1;
 	cout << "SmartFloatPointer1 = " << SmartFloatPointer1.getValue() << endl;
@@ -92,7 +115,15 @@ int main() {
 	SmartFloatPointer2.setValue(2.5);
 	cout << "SmartFloatPointer2 = " << SmartFloatPointer2.getValue() << endl;
 
-	
+	SmartPointer<float> SmartFloatPointer3 = SmartFloatPointer1 + SmartFloatPointer2;
+	cout << "SmartFloatPointer1 + SmartFloatPointer2 = " << SmartFloatPointer3.getValue() << endl;
+
+	SmartPointer<float> SmartFloatPointer4 = SmartFloatPointer2 - SmartFloatPointer1;
+	cout << "SmartFloatPointer2 - SmartFloatPointer1 = " << SmartFloatPointer4.getValue() << endl;
+
+	SmartPointer<float> SmartFloatPointer5 = SmartFloatPointer1 * SmartFloatPointer2;
+	cout << "SmartFloatPointer1 * SmartFloatPointer2 = " << SmartFloatPointer5.getValue() << endl;
+
+	return 0;
 
 }
-
