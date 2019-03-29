@@ -34,9 +34,10 @@ public:
 	SmartPointer(T j[], int _size) {
 		size = _size;
 		i = new T[size];
-		for (int k = 0; k < _size; k++) {
-			i[k] = j[k];
+		for (int k = 0; k < size; k++) {
+			i[k] = *(j + k);
 		}
+		
 	}
 
 	~SmartPointer() {
@@ -52,35 +53,59 @@ public:
 	T getValue(int index);
 
 	friend SmartPointer operator+(const SmartPointer<T> &sp1, const SmartPointer<T> &sp2) {
-		SmartPointer<T> result(0);
-		T* p1 = sp1.i;
-		T* p2 = sp2.i;
-		T sum;
-		sum= (*p1) + (*p2);
-		result.setValue(sum);
+		if (sp1.size != sp2.size) {
+			throw "Check sizes first.";
+		}
+
+		int sizes = sp1.size;
+		T* arr = new T[sizes];
+		SmartPointer<T> result(arr, sizes);
+		for (int k = 0; k < sizes; k++) {
+			T p1 = sp1.i[k];
+			T p2 = sp2.i[k];
+			T sum;
+			sum = (p1)+(p2);
+			result.setValue(sum, k);
+		}
 		return result;
 	};
 
 	friend SmartPointer operator-(const SmartPointer<T> &sp1, const SmartPointer<T> &sp2) {
-		SmartPointer<T> result(0);
-		T* p1 = sp1.i;
-		T* p2 = sp2.i;
-		T diff;
-		diff = (*p1) - (*p2);
-		if (diff < 0) {
-			throw "We don't do negatives.";
+		if (sp1.size != sp2.size) {
+			throw "Check sizes first.";
 		}
-		result.setValue(diff);
+
+		int sizes = sp1.size;
+		T* arr = new T[sizes];
+		SmartPointer<T> result(arr, sizes);
+		for (int k = 0; k < sizes; k++) {
+			T p1 = sp1.i[k];
+			T p2 = sp2.i[k];
+			T diff;
+			diff = (p1)-(p2);
+			if (diff < 0) {
+				throw "We don't do negatives";
+			}
+			result.setValue(diff, k);
+		}
 		return result;
 	};
 
 	friend SmartPointer operator*(const SmartPointer<T> &sp1, const SmartPointer<T> &sp2) {
-		SmartPointer<T> result(0);
-		T* p1 = sp1.i;
-		T* p2 = sp2.i;
-		T sum;
-		sum = (*p1) * (*p2);
-		result.setValue(sum);
+		if (sp1.size != sp2.size) {
+			throw "Check sizes first.";
+		}
+
+		int sizes = sp1.size;
+		T* arr = new T[sizes];
+		SmartPointer<T> result(arr, sizes);
+		for (int k = 0; k < sizes; k++) {
+			T p1 = sp1.i[k];
+			T p2 = sp2.i[k];
+			T total;
+			total = (p1)*(p2);
+			result.setValue(total, k);
+		}
 		return result;
 	};
 };
@@ -160,17 +185,24 @@ int main() {
 
 	SmartPointer<float> SmartFloatPointer5 = SmartFloatPointer1 * SmartFloatPointer2;
 	cout << "SmartFloatPointer1 * SmartFloatPointer2 = " << SmartFloatPointer5.getValue() << endl;
-	
-	float arr[] = {1, 2, 3, 4, 5, 6, 7};
-	SmartPointer<float> smartArray(arr, 7);
 
+	float arr[] = { 1, 2, 3, 4, 5, 6, 7 };
+	SmartPointer<float> smartArray1(arr, 7);
+	
 	for (int i = 0; i < 7; i++) {
-		smartArray.setValue((float) i, i);
-		cout << smartArray.getValue(i) << " ";
+		smartArray1.setValue((float)i, i);
+		cout << smartArray1.getValue(i) << " ";
 	}
 	cout << endl;
+	SmartPointer<float> smartArray2(arr, 7);
+	SmartPointer<float> smartArray3 = smartArray1 + smartArray2;
 
+	for (int i = 0; i < 7; i++) {
+		cout << smartArray3.getValue(i) << " ";
+	}
+	
 	return 0;
 
 
 }
+
